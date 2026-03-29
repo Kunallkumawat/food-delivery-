@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: #f8f8f8;
+    }
+
+    header {
+      background: linear-gradient(90deg, #ff416c, #ff4b2b);
+      padding: 15px;
+      color: white;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      margin: 15px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 300px;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .btn {
+      background: #ff4b2b;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    #cart {
+      position: fixed;
+      right: 20px;
+      top: 80px;
+      background: white;
+      padding: 15px;
+      width: 250px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    .rating {
+  color: gold;
+  font-weight: bold;
+}
+@media (max-width: 600px) {
+  .card {
+    width: 90%;
+  }
+
+  #cart {
+    position: static;
+    width: 100%;
+  }
+}
+.card:hover {
+  transform: scale(1.05);
+  transition: 0.3s;
+}
+  </style>
+</head>
+<body>
+
+<header>🍔 Food Ordering App</header>
+
+<div class="container">
+
+<!-- USER -->
+<div id="userSection" style="display:none;">
+  <h3>Welcome, <span id="username"></span> 👋</h3>
+  <button class="btn" onclick="logout()">Logout</button>
+</div>
+
+<!-- LOGIN -->
+<div id="authSection">
+  <h3>Login / Register</h3>
+  <input id="name" placeholder="Name"><br>
+  <input id="email" placeholder="Email"><br>
+  <input id="password" type="password" placeholder="Password"><br>
+  <button class="btn" onclick="register()">Register</button>
+  <button class="btn" onclick="login()">Login</button>
+</div>
+
+<hr>
+<input type="text" id="search" placeholder="Search food..." onkeyup="searchFood()" />
+
+<button onclick="filterCategory('all')">All</button>
+<button onclick="filterCategory('pizza')">Pizza</button>
+<button onclick="filterCategory('burger')">Burger</button>
+<button class="btn" onclick="loadOrders()">📦 View Orders</button>
+
+<div id="list" style="display:none;"></div>
+
+</div>
+
+<!-- CART -->
+<div id="cart">
+  <h3>🛒 Cart</h3>
+  <div id="cartItems"></div>
+  <h4>Total: ₹<span id="total">0</span></h4>
+  <button class="btn" onclick="payNow()">💳 Pay & Order</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
