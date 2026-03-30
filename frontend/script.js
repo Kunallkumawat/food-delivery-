@@ -2,7 +2,7 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 const user = JSON.parse(localStorage.getItem("user"));
 
 if (user) {
-    fetch("http://localhost:5000/api/restaurants")
+    fetch("https://food-delivery-b2f6.onrender.com/api/restaurants")
     .then(res => res.json())
     .then(data => {
         const list = document.getElementById("list");
@@ -115,7 +115,7 @@ function placeOrder() {
         return;
     }
 
-    fetch("http://localhost:5000/api/orders", {
+    fetch("https://food-delivery-b2f6.onrender.com/api/orders", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -139,7 +139,7 @@ function register() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    fetch("http://localhost:5000/api/register", {
+    fetch("https://food-delivery-b2f6.onrender.com/api/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -154,7 +154,7 @@ function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    fetch("http://localhost:5000/api/login", {
+    fetch("https://food-delivery-b2f6.onrender.com/api/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -192,8 +192,7 @@ function loadOrders() {
         return;
     }
 
-    fetch(`http://localhost:5000/api/orders/${user.email}`)
-    .then(res => res.json())
+fetch(`https://food-delivery-b2f6.onrender.com/api/orders/${user.email}`)    .then(res => res.json())
     .then(data => {
         const div = document.getElementById("orders");
         div.innerHTML = "<h2>Your Orders</h2>";
