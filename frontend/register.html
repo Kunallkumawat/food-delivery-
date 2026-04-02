@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    }
+
+    .box {
+      background: white;
+      padding: 35px;
+      border-radius: 20px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    input {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #ff4b2b;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .link {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <img src="logo.png" width="70" style="margin-bottom:10px;">
+  <h2>Login</h2>
+
+  <input type="email" id="email" placeholder="Enter Email">
+  <input type="password" id="password" placeholder="Enter Password">
+
+  <button onclick="login()">Login</button>
+
+  <div class="link">
+    New user? <a href="register.html">Register</a>
+  </div>
+</div>
+
+<script>
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email) {
+    alert("Email required ❌");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    alert("Enter valid email ❌");
+    return;
+  }
+
+  if (!password) {
+    alert("Password required ❌");
+    return;
+  }
+
+  fetch("https://food-delivery-b2f6.onrender.com/api/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+
+    if (data.token) {
+      localStorage.setItem("user", JSON.stringify({ email }));
+      window.location.href = "index.html";
+    }
+  });
+}
+</script>
+
+</body>
+</html>

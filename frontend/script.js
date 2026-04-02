@@ -16,7 +16,7 @@ const user = JSON.parse(localStorage.getItem("user"));
                  menuHTML += `
                     <p>${item.name} - ₹${item.price}</p>
         
-                    ${user ? 
+                    ${JSON.parse(localStorage.getItem("user")) ? 
                         `<button onclick="addToCart('${item.name}', ${item.price})">Add to Cart</button>` 
                         : 
                         `<button onclick="alert('Login karo ❌')">Login to order</button>`
@@ -39,6 +39,14 @@ const user = JSON.parse(localStorage.getItem("user"));
 
 // Add to cart with quantity
 function addToCart(name, price) {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("Login first");
+        window.location.href = "login.html";
+        return;
+    }
+
     const existing = cart.find(item => item.name === name);
 
     if (existing) {
@@ -108,7 +116,8 @@ function placeOrder() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user) {
-        alert("Login karo pehle ❌");
+        alert("Login first");
+        window.location.href = "login.html";
         return;
     }
 
@@ -155,7 +164,18 @@ function register() {
 function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    if (!email) {
+        alert("fill the Email ");
+        return;
+    }
 
+    if (!isValidEmail(email)) {
+        alert("fill Proper email id  ");
+        return;
+    }
     fetch("https://food-delivery-b2f6.onrender.com/api/login", {
         method: "POST",
         headers: {
@@ -167,16 +187,96 @@ function login() {
     .then(data => {
         alert(data.message);
 
-        if (data.token) {
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify({ email }));
+    if (data.token) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify({ email }));
 
-            showUser();
-        }
-        else {
-    alert("Login karo pehle 👇");
-}
+    window.location.href = "index.html";
+    }   
     });
+}
+function loadOrders() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("Login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    fetch(`https://food-delivery-b2f6.onrender.com/api/orders/${user.email}`)
+    .then(res => res.json())
+    .then(data => {
+        const div = document.getElementById("orders");
+        div.innerHTML = "<h2>Your Orders</h2>";
+
+        data.forEach(order => {
+
+    let itemsHTML = "";
+
+    order.items.forEach(item => {
+        itemsHTML += `
+            <p>${item.name} x ${item.quantity} (₹${item.price})</p>
+        `;
+    });
+
+    div.innerHTML += `
+        <div style="border:1px solid black; margin:10px; padding:10px;">
+            
+            <h4>Items:</h4>
+            ${itemsHTML}
+
+            <p><b>Total:</b> ₹${order.total}</p>
+            <p><b>Time:</b> ${new Date(order.date).toLocaleString()}</p>
+
+            <p style="color:${order.status === 'pending' ? 'orange' : 'green'}">
+                Status: ${order.status}
+            </p>
+        </div>
+    `;
+});
+    });
+    window.onload = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+        loadOrders();
+    }
+}
+}
+function showUser() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        document.getElementById("userSection").style.display = "block";
+        document.getElementById("username").innerText = user.email;
+        document.getElementById("loginBtn").style.display = "none";
+        // hide login form
+        document.getElementById("authSection").style.display = "none";
+
+        // SHOW FOOD
+        document.getElementById("list").style.display = "block";
+    }
+}
+function logout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    location.reload();
+}
+window.onload = function() {
+    showUser();
+    renderCart();
+};
+
+function payNow() {
+    if (cart.length === 0) {
+        alert("Cart empty hai ❌");
+        return;
+    }
+
+    alert("Payment successful (Demo) ✅");
+
+    // Direct order place
+    placeOrder();
 }
 function loadOrders() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -190,54 +290,37 @@ function loadOrders() {
     .then(res => res.json())
     .then(data => {
         const div = document.getElementById("orders");
-        div.innerHTML = "<h2>Your Orders</h2>";
 
-        data.forEach(order => {
+        if (data.length === 0) {
+            div.innerHTML = "<h3>No orders yet 😢</h3>";
+            return;
+        }
+
+        div.innerHTML = "<h2>🧾 Your Orders</h2>";
+
+        data.reverse().forEach(order => {
             div.innerHTML += `
-                <div style="border:1px solid black; margin:10px; padding:10px;">
-                    <p>Total: ₹${order.total}</p>
-                    <p>Date: ${new Date(order.date).toLocaleString()}</p>
-                    <p style="color:${order.status === 'pending' ? 'orange' : 'green'}">
-                        Status: ${order.status}
+                <div style="
+                    background:white;
+                    padding:15px;
+                    margin:10px 0;
+                    border-radius:12px;
+                    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+                ">
+                    <p><b>Total:</b> ₹${order.total}</p>
+                    
+                    <p>
+                      <b>Status:</b> 
+                      <span style="color:${order.status === 'pending' ? 'orange' : 'green'}">
+                        ${order.status}
+                      </span>
                     </p>
+
+                    <p><b>Time:</b> ${new Date(order.date).toLocaleString()}</p>
                 </div>
             `;
         });
     });
-}
-function showUser() {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (user) {
-        document.getElementById("userSection").style.display = "block";
-        document.getElementById("username").innerText = user.email;
-
-        // hide login form
-        document.getElementById("authSection").style.display = "none";
-
-        // SHOW FOOD
-        document.getElementById("list").style.display = "block";
-    }
-}
-function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    location.reload();
-}
-window.onload = function() {
-    showUser();
-};
-
-function payNow() {
-    if (cart.length === 0) {
-        alert("Cart empty hai ❌");
-        return;
-    }
-
-    alert("Payment successful (Demo) ✅");
-
-    // Direct order place
-    placeOrder();
 }
 function searchFood() {
     const value = document.getElementById("search").value.toLowerCase();
@@ -265,4 +348,19 @@ function filterCategory(type) {
             card.style.display = "none";
         }
     });
+}function checkLoginForOrders() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    loadOrders();
+}
+
+window.onload = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) loadOrders();
 }

@@ -3,132 +3,175 @@
 <head>
   <title>Food App</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
       margin: 0;
-      background: #f8f8f8;
+      font-family: 'Poppins', sans-serif;
     }
 
-    header {
-      background: linear-gradient(90deg, #ff416c, #ff4b2b);
-      padding: 15px;
-      color: white;
-      text-align: center;
-      font-size: 22px;
-    }
-
-    .container {
+    /* HEADER */
+    .header {
+      display: flex;
+      justify-content: space-between;
       padding: 20px;
+      color: white;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .header button {
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .login-btn {
+      background: black;
+      color: white;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #ff5200, #ff7a00);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .search-box input {
+      padding: 12px;
+      width: 250px;
+      border-radius: 10px;
+      border: none;
+    }
+
+    /* CARDS */
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px;
+      flex-wrap: wrap;
     }
 
     .card {
-      background: white;
-      padding: 15px;
-      margin: 15px;
+      background: #f5f5f5;
+      width: 280px;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 100%;
       border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      width: 300px;
-      display: inline-block;
-      vertical-align: top;
     }
 
     .btn {
-      background: #ff4b2b;
-      color: white;
+      margin-top: 10px;
       padding: 10px;
+      background: #ff5200;
+      color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      margin-top: 5px;
     }
 
-    #cart {
-      position: fixed;
-      right: 20px;
-      top: 80px;
-      background: white;
-      padding: 15px;
-      width: 250px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    }
-
-    input {
-      padding: 8px;
-      margin: 5px;
-      width: 200px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .card img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-    .rating {
-  color: gold;
-  font-weight: bold;
-}
-@media (max-width: 600px) {
-  .card {
-    width: 90%;
-  }
-
-  #cart {
-    position: static;
-    width: 100%;
-  }
-}
-.card:hover {
-  transform: scale(1.05);
-  transition: 0.3s;
-}
   </style>
 </head>
+
 <body>
 
-<header>🍔 Food Ordering App</header>
+<!-- HEADER -->
+<header style="display:flex; align-items:center; justify-content:center; gap:10px;">
+  <img src="logo.png" width="40">
+  <span>Food Ordering App</span>
+</header>
 
-<div class="container">
+    <div id="loginBtn">
+  <button onclick="goLogin()">Sign In</button>
+</div>
+  </div>
 
-<!-- USER -->
+  <h1>Order food & groceries. Discover best restaurants.</h1>
+
+  <div class="search-box">
+    <input type="text" placeholder="Search food...">
+  </div>
+
+</div>
+
 <div id="userSection" style="display:none;">
   <h3>Welcome, <span id="username"></span> 👋</h3>
-  <button class="btn" onclick="logout()">Logout</button>
+  <button onclick="logout()">Logout</button>
 </div>
 
-<!-- LOGIN -->
-<div id="authSection">
-  <h3>Login / Register</h3>
-  <input id="name" placeholder="Name"><br>
-  <input id="email" placeholder="Email"><br>
-  <input id="password" type="password" placeholder="Password"><br>
-  <button class="btn" onclick="register()">Register</button>
-  <button class="btn" onclick="login()">Login</button>
+<!-- CARDS -->
+<div class="cards">
+
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092">
+    <h3>Food Delivery</h3>
+    <p>Upto 60% OFF</p>
+    <button class="btn" onclick="goApp()">Explore</button>
+  </div>
+
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e">
+    <h3>Groceries</h3>
+    <p>Instant delivery</p>
+    <button class="btn">Coming Soon</button>
+  </div>
+
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5">
+    <h3>Dineout</h3>
+    <p>Save more</p>
+    <button class="btn">Coming Soon</button>
+  </div>
+
 </div>
 
-<hr>
-<input type="text" id="search" placeholder="Search food..." onkeyup="searchFood()" />
+<script>
+function goLogin() {
+  window.location.href = "login.html";
+}
 
-<button onclick="filterCategory('all')">All</button>
-<button onclick="filterCategory('pizza')">Pizza</button>
-<button onclick="filterCategory('burger')">Burger</button>
-<button class="btn" onclick="loadOrders()">📦 View Orders</button>
+function goApp() {
+  const user = JSON.parse(localStorage.getItem("user"));
 
-<div id="list" style="display:none;"></div>
+  if (!user) {
+    alert("Login first ❌");
+    window.location.href = "login.html";
+    return;
+  }
 
-</div>
+  window.location.href = "home.html"; // food page
+}
+</script>
 
-<!-- CART -->
-<div id="cart">
-  <h3>🛒 Cart</h3>
-  <div id="cartItems"></div>
-  <h4>Total: ₹<span id="total">0</span></h4>
-  <button class="btn" onclick="payNow()">💳 Pay & Order</button>
-</div>
-
-<script src="script.js"></script>
 </body>
 </html>

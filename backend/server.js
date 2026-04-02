@@ -26,16 +26,19 @@ app.get('/api/restaurants', async (req,res)=>{
 });
 
 // Server start
-app.listen(5000, ()=>{
-    console.log("Server running on 5000 🚀");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, ()=>{
+    console.log(`Server running on ${PORT} 🚀`);
 });
+   
 // Place Order API
 app.post('/api/orders', async (req, res) => {
     const order = req.body;
 
     order.status = "pending";
-    order.userEmail = req.body.userEmail; // 🔥 ye line add kar
-
+    order.userEmail = req.body.userEmail; 
+    order.date = new Date(); 
     await mongoose.connection.db.collection("orders").insertOne(order);
 
     res.json({ message: "Order placed successfully ✅" });
@@ -43,7 +46,9 @@ app.post('/api/orders', async (req, res) => {
 // Register API
 app.post('/api/register', async (req, res) => {
     const { name, email, password } = req.body;
-
+    if (!name || !email || !password) {
+        return res.json({ message: "All fields required ❌" });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await mongoose.connection.db.collection("users").insertOne({
@@ -51,13 +56,20 @@ app.post('/api/register', async (req, res) => {
         email,
         password: hashedPassword
     });
+    const existingUser = await mongoose.connection.db.collection("users").findOne({ email });
 
+if (existingUser) {
+    return res.json({ message: "User already exists ❌" });
+}
     res.json({ message: "User registered successfully ✅" });
 });
 
 // Login API
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
+    if (!email || !password) {
+    return res.json({ message: "All fields required ❌" });
+}
 
     const user = await mongoose.connection.db.collection("users").findOne({ email });
 
