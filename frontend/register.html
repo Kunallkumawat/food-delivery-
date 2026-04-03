@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
+  <title>Register</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
   <style>
@@ -52,12 +52,13 @@
 
 <div class="box">
   <img src="logo.png" width="70" style="margin-bottom:10px;">
-  <h2>Login</h2>
-
+  <h2>Register</h2>
+  <input type="Name" id="Name" placeholder="Enter Name">
   <input type="email" id="email" placeholder="Enter Email">
-  <input type="password" id="password" placeholder="Enter Password">
+  <input tpye="Mobile No." id="Mobile No." placeholder="Enter Mobile Number">
+  <input type="password" id="password" placeholder="Create password">
 
-  <button onclick="login()">Login</button>
+  <button onclick="Register()">Register</button>
 
   <div class="link">
     New user? <a href="register.html">Register</a>
@@ -65,6 +66,7 @@
 </div>
 
 <script>
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
