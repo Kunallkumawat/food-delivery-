@@ -16,7 +16,6 @@
       color: white;
     }
 
-    /* HEADER */
     .header {
       display: flex;
       justify-content: space-between;
@@ -53,7 +52,11 @@
       color: white;
     }
 
-    /* HERO */
+    #logoutBtn {
+      background: red;
+      color: white;
+    }
+
     .hero {
       background: linear-gradient(135deg, #ff5200, #ff7a00);
       color: white;
@@ -68,7 +71,6 @@
       border: none;
     }
 
-    /* FEATURE CARDS */
     .features {
       display: flex;
       justify-content: center;
@@ -85,69 +87,15 @@
       border-radius: 20px;
       text-align: center;
       box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-      transition: 0.3s;
     }
 
-    .feature-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .feature-card img {
-      width: 100%;
-      border-radius: 15px;
-    }
-
-    /* RESTAURANTS */
     .cards {
-      display: none; /* 🔥 hidden by default */
+      display: none;
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
       padding: 30px;
     }
-
-    .card {
-      width: 260px;
-      border-radius: 20px;
-      overflow: hidden;
-      background: white;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      transition: 0.3s;
-    }
-
-    .card:hover {
-      transform: scale(1.05);
-    }
-
-    .card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-    }
-
-    .card-content {
-      padding: 15px;
-    }
-
-    .rating {
-      background: green;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-    }
-
-    .btn {
-      margin-top: 10px;
-      padding: 10px;
-      background: #ff5200;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-    }
-
   </style>
 </head>
 
@@ -170,10 +118,12 @@
     </select>
 
     <button onclick="toggleDark()">🌙</button>
-
     <button onclick="checkLoginForOrders()">Orders</button>
+
     <span id="userName"></span>
+
     <button id="loginBtn" onclick="goLogin()">Sign In</button>
+    <button id="logoutBtn" onclick="logout()" style="display:none;">Sign Out</button>
 
   </div>
 </div>
@@ -184,27 +134,9 @@
   <input type="text" placeholder="Search food...">
 </div>
 
-<!-- FEATURE CARDS -->
+<!-- FEATURE -->
 <div class="features" id="featureSection">
-
-  <div class="feature-card">
-    <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092">
-    <h3>Food Delivery</h3>
-    <p>Fast & hot delivery</p>
-  </div>
-
-  <div class="feature-card">
-    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e">
-    <h3>Groceries</h3>
-    <p>Daily essentials</p>
-  </div>
-
-  <div class="feature-card">
-    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5">
-    <h3>Dineout</h3>
-    <p>Save more</p>
-  </div>
-
+  <div class="feature-card"><h3>Login to view restaurants 🔒</h3></div>
 </div>
 
 <!-- RESTAURANTS -->
@@ -217,12 +149,47 @@
   <h4>Total: ₹<span id="total">0</span></h4>
   <button onclick="payNow()">Pay</button>
 </div>
+
+<script src="script.js"></script>
+
 <script>
+
+// LOGIN PAGE
 function goLogin() {
   window.location.href = "login.html";
 }
 
-// 🔥 MAIN LOGIC
+// SHOW USER
+function showUser() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const name = document.getElementById("userName");
+
+  if (user) {
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+    name.innerText = "👤 " + user.email;
+  } else {
+    loginBtn.style.display = "inline-block";
+    logoutBtn.style.display = "none";
+    name.innerText = "";
+  }
+}
+
+// LOGOUT
+function logout() {
+  localStorage.removeItem("user");
+  localStorage.removeItem("cart");
+
+  document.getElementById("list").style.display = "none";
+  document.getElementById("featureSection").style.display = "flex";
+
+  location.reload();
+}
+
+// PAGE LOAD
 document.addEventListener("DOMContentLoaded", function () {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -236,10 +203,11 @@ document.addEventListener("DOMContentLoaded", function () {
     list.style.display = "none";
     feature.style.display = "flex";
   }
-});
-</script>
 
-<script src="script.js"></script>
+  showUser();
+});
+
+</script>
 
 </body>
 </html>
