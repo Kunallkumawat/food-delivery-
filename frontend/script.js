@@ -6,7 +6,11 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 function loadRestaurants() {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    if (!user) return;
+    // ❌ LOGIN NA HO TO RESTAURANT HIDE
+    if (!user) {
+        document.getElementById("list").innerHTML = "<h2 style='text-align:center'>Login to view restaurants 🔒</h2>";
+        return;
+    }
 
     fetch("https://food-delivery-b2f6.onrender.com/api/restaurants")
     .then(res => res.json())
@@ -133,8 +137,8 @@ function payNow() {
         })
     })
     .then(res => res.json())
-    .then(() => {
-        alert("Order placed ✅");
+    .then(data => {
+        alert(data.message || "Order placed ✅");
         cart = [];
         renderCart();
     });
@@ -146,11 +150,6 @@ function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    if (!email.includes("@")) {
-        alert("Enter valid email ❌");
-        return;
-    }
-
     fetch("https://food-delivery-b2f6.onrender.com/api/login", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -161,7 +160,7 @@ function login() {
         if (data.token) {
             localStorage.setItem("user", JSON.stringify({
                 email: email,
-                name: data.name || email
+                name: email.split("@")[0] // 🔥 NAME FIX
             }));
 
             window.location.href = "index.html";
@@ -172,7 +171,7 @@ function login() {
 }
 
 
-// ================= SHOW USER (🔥 FIXED) =================
+// ================= SHOW USER =================
 function showUser() {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -186,6 +185,13 @@ function showUser() {
 }
 
 
+// ================= LOGOUT =================
+function logout() {
+    localStorage.removeItem("user");
+    location.reload();
+}
+
+
 // ================= NAV =================
 function goLogin() {
     window.location.href = "login.html";
@@ -194,13 +200,7 @@ function goLogin() {
 
 // ================= LOAD =================
 window.onload = function () {
-
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (user) {
-        loadRestaurants();
-    }
-
+    loadRestaurants();
     renderCart();
     showUser();
 };
