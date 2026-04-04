@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
@@ -14,7 +13,7 @@ let db;
 
 mongoose.connect(process.env.MONGO_URL)
 .then(() => {
-    db = mongoose.connection.db;  // 🔥 correct DB
+    db = mongoose.connection.db;
     console.log("✅ Mongo Connected");
 })
 .catch(err => console.log("❌ ERROR:", err));
@@ -61,28 +60,6 @@ app.post('/api/orders', async (req, res) => {
     }
 });
 
-// ================= REGISTER =================
-app.post('/api/register', async (req, res) => {
-    try {
-        console.log("🔥 ORDER HIT");
-        const { name, email, password } = req.body;
-
-        const existingUser = await db.collection("users").findOne({ email });
-        if (existingUser) return res.json({ message: "User exists ❌" });
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        await db.collection("users").insertOne({
-            name, email, password: hashedPassword
-        });
-
-        res.json({ message: "Registered ✅" });
-
-    } catch {
-        res.json({ message: "Error ❌" });
-    }
-});
-
 // ================= LOGIN =================
 app.post('/api/login', async (req, res) => {
     const user = await db.collection("users").findOne({ email: req.body.email });
@@ -96,15 +73,6 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign({ email: user.email }, "secret123");
 
     res.json({ message: "Login successful ✅", token });
-});
-
-// ================= GET ORDERS =================
-app.get('/api/orders/:email', async (req, res) => {
-    const data = await db.collection("orders")
-        .find({ userEmail: req.params.email })
-        .toArray();
-
-    res.json(data);
 });
 
 // ================= SERVER =================
