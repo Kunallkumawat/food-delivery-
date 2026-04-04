@@ -109,7 +109,7 @@ function payNow() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user) {
-        alert("Login karo ❌");
+        alert("Login first ❌");
         return;
     }
 
