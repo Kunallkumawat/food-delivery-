@@ -6,11 +6,7 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 function loadRestaurants() {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    // 🔥 STOP if not logged in
-    if (!user) {
-        console.log("❌ Not logged in");
-        return;
-    }
+    if (!user) return;
 
     fetch("https://food-delivery-b2f6.onrender.com/api/restaurants")
     .then(res => res.json())
@@ -141,14 +137,7 @@ function payNow() {
         alert("Order placed ✅");
         cart = [];
         renderCart();
-        openTracking();
     });
-}
-
-
-// ================= TRACKING =================
-function openTracking() {
-    window.location.href = "map.html";
 }
 
 
@@ -170,7 +159,11 @@ function login() {
     .then(res => res.json())
     .then(data => {
         if (data.token) {
-            localStorage.setItem("user", JSON.stringify({ email }));
+            localStorage.setItem("user", JSON.stringify({
+                email: email,
+                name: data.name || email
+            }));
+
             window.location.href = "index.html";
         } else {
             alert(data.message);
@@ -179,102 +172,23 @@ function login() {
 }
 
 
-// ================= ORDERS =================
-function loadOrders() {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return;
-
-    fetch(`https://food-delivery-b2f6.onrender.com/api/orders/${user.email}`)
-    .then(res => res.json())
-    .then(data => {
-        const div = document.getElementById("orders");
-        if (!div) return;
-
-        div.innerHTML = "<h2>Your Orders</h2>";
-
-        data.forEach(order => {
-            div.innerHTML += `
-                <div>
-                    ₹${order.total} | ${order.status} | 
-                    ${new Date(order.date).toLocaleString()}
-                    <button onclick="openTracking()">Track</button>
-                </div>
-            `;
-        });
-    });
-}
-
-function checkLoginForOrders() {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) {
-        alert("Login first ❌");
-        return;
-    }
-    loadOrders();
-}
-
-
-// ================= ADMIN =================
-function addRestaurant() {
-    const name = document.getElementById("name").value;
-    const image = document.getElementById("image").value;
-    const address = document.getElementById("address").value;
-    const rating = document.getElementById("rating").value;
-
-    const menuText = document.getElementById("menu").value;
-
-    const menu = menuText.split(",").map(i => {
-        const [n, p] = i.split(":");
-        return { name: n, price: Number(p) };
-    });
-
-    fetch("https://food-delivery-b2f6.onrender.com/api/restaurants", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ name, image, address, rating, menu })
-    })
-    .then(res => res.json())
-    .then(() => alert("Restaurant Added ✅"));
-}
-
-
-// ================= DARK MODE =================
-function toggleDark() {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-}
-
-
-// ================= LOCATION =================
-function saveLocation() {
-    const loc = document.getElementById("location").value;
-    localStorage.setItem("location", loc);
-    alert("Location set: " + loc);
-}
-
-
-// ================= UI =================
+// ================= SHOW USER (🔥 FIXED) =================
 function showUser() {
     const user = JSON.parse(localStorage.getItem("user"));
+
     if (user) {
-        document.getElementById("userSection").style.display = "block";
-        document.getElementById("username").innerText = user.email;
+        const btn = document.getElementById("loginBtn");
+        const name = document.getElementById("userName");
+
+        if (btn) btn.style.display = "none";
+        if (name) name.innerText = "👤 " + user.name;
     }
 }
 
-function logout() {
-    localStorage.clear();
-    location.reload();
-}
 
-function searchFood() {
-    const value = document.getElementById("search").value.toLowerCase();
-
-    document.querySelectorAll(".card").forEach(card => {
-        card.style.display = card.innerText.toLowerCase().includes(value)
-            ? "block"
-            : "none";
-    });
+// ================= NAV =================
+function goLogin() {
+    window.location.href = "login.html";
 }
 
 
@@ -282,20 +196,11 @@ function searchFood() {
 window.onload = function () {
 
     const user = JSON.parse(localStorage.getItem("user"));
-    const list = document.getElementById("list");
 
-if (!user && list) {
-  list.style.display = "none";
-}
-    // 🔥 ONLY LOAD IF LOGIN
     if (user) {
         loadRestaurants();
     }
 
     renderCart();
     showUser();
-
-    if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-    }
 };
