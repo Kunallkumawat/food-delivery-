@@ -10,15 +10,14 @@ app.use(cors());
 app.use(express.json());
 
 // ================= DB CONNECT =================
-mongoose.connect(process.env.MONGO_URL,{
-    dbName: "foodOrdering"
+let db;
+
+mongoose.connect(process.env.MONGO_URL)
+.then(() => {
+    db = mongoose.connection.db;  // 🔥 correct DB
+    console.log("✅ Mongo Connected");
 })
-.then(()=>console.log("✅ Mongo Connected"))
-.catch(err=>console.log("❌ ERROR:", err));
-
-// 🔥 FORCE DATABASE
-const db = mongoose.connection.useDb("foodOrdering");
-
+.catch(err => console.log("❌ ERROR:", err));
 
 // ================= TEST =================
 app.get('/', (req,res)=>{
