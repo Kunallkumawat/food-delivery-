@@ -99,7 +99,7 @@
 
     /* RESTAURANTS */
     .cards {
-      display: flex;
+      display: none; /* 🔥 hidden by default */
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
@@ -162,21 +162,17 @@
 
   <div class="nav">
 
-    <!-- LOCATION -->
-    <select id="location" onchange="saveLocation()">
+    <select>
       <option>Select Location</option>
       <option>Mumbai</option>
       <option>Delhi</option>
       <option>Pune</option>
     </select>
 
-    <!-- DARK MODE -->
     <button onclick="toggleDark()">🌙</button>
 
-    <!-- ORDERS -->
     <button onclick="checkLoginForOrders()">Orders</button>
 
-    <!-- LOGIN -->
     <button id="loginBtn" onclick="goLogin()">Sign In</button>
 
   </div>
@@ -185,11 +181,11 @@
 <!-- HERO -->
 <div class="hero">
   <h1>Discover Best Food Near You 🍔</h1>
-  <input type="text" id="search" placeholder="Search food..." onkeyup="searchFood()">
+  <input type="text" placeholder="Search food...">
 </div>
 
 <!-- FEATURE CARDS -->
-<div class="features">
+<div class="features" id="featureSection">
 
   <div class="feature-card">
     <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092">
@@ -211,30 +207,29 @@
 
 </div>
 
-<!-- USER -->
-<div id="userSection" style="text-align:center; display:none;">
-  <h3>Welcome, <span id="username"></span> 👋</h3>
-  <button onclick="logout()">Logout</button>
-</div>
-
 <!-- RESTAURANTS -->
 <div id="list" class="cards"></div>
-
-<!-- CART -->
-<div id="cart" style="padding:20px;">
-  <h2>🛒 Cart</h2>
-  <div id="cartItems"></div>
-  <h3>Total: ₹<span id="total">0</span></h3>
-  <button onclick="payNow()">Pay Now</button>
-</div>
-
-<!-- ORDERS -->
-<div id="orders"></div>
 
 <script>
 function goLogin() {
   window.location.href = "login.html";
 }
+
+// 🔥 MAIN LOGIC
+document.addEventListener("DOMContentLoaded", function () {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const list = document.getElementById("list");
+  const feature = document.getElementById("featureSection");
+
+  if (user) {
+    list.style.display = "flex";
+    feature.style.display = "none";
+  } else {
+    list.style.display = "none";
+    feature.style.display = "flex";
+  }
+});
 </script>
 
 <script src="script.js"></script>

@@ -1,8 +1,17 @@
 // ================= GLOBAL =================
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+
 // ================= FETCH RESTAURANTS =================
 function loadRestaurants() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // 🔥 STOP if not logged in
+    if (!user) {
+        console.log("❌ Not logged in");
+        return;
+    }
+
     fetch("https://food-delivery-b2f6.onrender.com/api/restaurants")
     .then(res => res.json())
     .then(data => {
@@ -21,21 +30,19 @@ function loadRestaurants() {
                 menuHTML += `
                     <div>
                         ${item.name} - ₹${item.price}<br>
-                        ${
-                            JSON.parse(localStorage.getItem("user"))
-                            ? `<button class="btn" onclick="addToCart('${item.name}', ${item.price})">Add</button>`
-                            : `<button class="btn" onclick="alert('Login karo ❌')">Login</button>`
-                        }
+                        <button class="btn" onclick="addToCart('${item.name}', ${item.price})">Add</button>
                     </div>
                 `;
             });
 
             div.innerHTML = `
                 <img src="${r.image}" onerror="this.src='https://picsum.photos/300'" />
-                <h3>${r.name}</h3>
-                <p>${r.address}</p>
-                <p>⭐ ${r.rating}</p>
-                ${menuHTML}
+                <div class="card-content">
+                  <h3>${r.name}</h3>
+                  <p>${r.address}</p>
+                  <p>⭐ ${r.rating}</p>
+                  ${menuHTML}
+                </div>
             `;
 
             list.appendChild(div);
@@ -134,7 +141,7 @@ function payNow() {
         alert("Order placed ✅");
         cart = [];
         renderCart();
-        openTracking(); // 🚀 tracking open
+        openTracking();
     });
 }
 
@@ -273,7 +280,18 @@ function searchFood() {
 
 // ================= LOAD =================
 window.onload = function () {
-    loadRestaurants();
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const list = document.getElementById("list");
+
+if (!user && list) {
+  list.style.display = "none";
+}
+    // 🔥 ONLY LOAD IF LOGIN
+    if (user) {
+        loadRestaurants();
+    }
+
     renderCart();
     showUser();
 
