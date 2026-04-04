@@ -16,12 +16,13 @@
     }
 
     .box {
-      background: white;
+      background: rgba(255,255,255,0.95);
       padding: 35px;
       border-radius: 20px;
       width: 350px;
       text-align: center;
       box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
     }
 
     input {
@@ -30,6 +31,7 @@
       margin: 10px 0;
       border-radius: 10px;
       border: 1px solid #ccc;
+      outline: none;
     }
 
     button {
@@ -40,24 +42,46 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #e8432a;
     }
 
     .link {
       margin-top: 10px;
     }
+
+    .toggle {
+      position: relative;
+    }
+
+    .eye {
+      position: absolute;
+      right: 25px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+
   </style>
 </head>
 
 <body>
 
 <div class="box">
-    <img src="logo.png" width="70" style="margin-bottom:10px;">
+  <img src="logo.png" width="70">
   <h2>Login</h2>
 
   <input type="email" id="email" placeholder="Enter Email">
-  <input type="password" id="password" placeholder="Enter Password">
 
-  <button onclick="login()">Login</button>
+  <div class="toggle">
+    <input type="password" id="password" placeholder="Enter Password">
+    <span class="eye" onclick="togglePassword()">👁️</span>
+  </div>
+
+  <button id="loginBtn" onclick="login()">Login</button>
 
   <div class="link">
     New user? <a href="register.html">Register</a>
@@ -65,16 +89,31 @@
 </div>
 
 <script>
+
+// AUTO LOGIN CHECK
+if (localStorage.getItem("user")) {
+  window.location.href = "index.html";
+}
+
+// EMAIL VALIDATION
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+// SHOW PASSWORD
+function togglePassword() {
+  const pass = document.getElementById("password");
+  pass.type = pass.type === "password" ? "text" : "password";
+}
 
-  if (!email) {
-    alert("Email required ❌");
+// LOGIN FUNCTION
+function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const btn = document.getElementById("loginBtn");
+
+  if (!email || !password) {
+    alert("All fields required ❌");
     return;
   }
 
@@ -83,10 +122,8 @@ function login() {
     return;
   }
 
-  if (!password) {
-    alert("Password required ❌");
-    return;
-  }
+  btn.innerText = "Logging in...";
+  btn.disabled = true;
 
   fetch("https://food-delivery-b2f6.onrender.com/api/login", {
     method: "POST",
@@ -97,14 +134,19 @@ function login() {
   })
   .then(res => res.json())
   .then(data => {
-    alert(data.message);
-
     if (data.token) {
       localStorage.setItem("user", JSON.stringify({ email }));
       window.location.href = "index.html";
+    } else {
+      alert(data.message);
     }
+  })
+  .finally(() => {
+    btn.innerText = "Login";
+    btn.disabled = false;
   });
 }
+
 </script>
 
 </body>

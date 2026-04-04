@@ -51,32 +51,37 @@
 <body>
 
 <div class="box">
-  <img src="logo.png" width="70" style="margin-bottom:10px;">
+  <img src="logo.png" width="70">
   <h2>Register</h2>
-  <input type="Name" id="Name" placeholder="Enter Name">
-  <input type="email" id="email" placeholder="Enter Email">
-  <input tpye="Mobile No." id="Mobile No." placeholder="Enter Mobile Number">
-  <input type="password" id="password" placeholder="Create password">
 
-  <button onclick="Register()">Register</button>
+  <input type="text" id="name" placeholder="Enter Name">
+  <input type="email" id="email" placeholder="Enter Email">
+  <input type="text" id="mobile" placeholder="Enter Mobile Number">
+  <input type="password" id="password" placeholder="Create Password">
+
+  <button onclick="register()">Register</button>
 
   <div class="link">
-    New user? <a href="register.html">Register</a>
+    Already user? <a href="login.html">Login</a>
   </div>
 </div>
 
 <script>
 
+// EMAIL VALIDATION
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function login() {
+// REGISTER FUNCTION
+function register() {
+  const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
+  const mobile = document.getElementById("mobile").value;
   const password = document.getElementById("password").value;
 
-  if (!email) {
-    alert("Email required ❌");
+  if (!name || !email || !mobile || !password) {
+    alert("All fields required ❌");
     return;
   }
 
@@ -85,28 +90,25 @@ function login() {
     return;
   }
 
-  if (!password) {
-    alert("Password required ❌");
+  if (mobile.length < 10) {
+    alert("Enter valid mobile number ❌");
     return;
   }
 
-  fetch("https://food-delivery-b2f6.onrender.com/api/login", {
+  fetch("https://food-delivery-b2f6.onrender.com/api/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ name, email, password })
   })
   .then(res => res.json())
   .then(data => {
     alert(data.message);
-
-    if (data.token) {
-      localStorage.setItem("user", JSON.stringify({ email }));
-      window.location.href = "index.html";
-    }
+    window.location.href = "login.html";
   });
 }
+
 </script>
 
 </body>

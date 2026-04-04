@@ -1,37 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Food App</title>
+  <title>FoodApp</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
+      background: #f8f8f8;
+    }
+
+    .dark {
+      background: #121212;
+      color: white;
     }
 
     /* HEADER */
     .header {
       display: flex;
       justify-content: space-between;
-      padding: 20px;
-      color: white;
+      padding: 15px 40px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo-section {
+      display: flex;
       align-items: center;
+      gap: 10px;
     }
 
     .logo {
-      font-size: 22px;
-      font-weight: bold;
+      width: 45px;
     }
 
-    .header button {
-      padding: 8px 15px;
+    .nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .nav button, .nav select {
+      padding: 8px 12px;
       border-radius: 8px;
       border: none;
       cursor: pointer;
     }
 
-    .login-btn {
+    #loginBtn {
       background: black;
       color: white;
     }
@@ -40,44 +57,61 @@
     .hero {
       background: linear-gradient(135deg, #ff5200, #ff7a00);
       color: white;
-      padding: 40px;
+      padding: 50px;
       text-align: center;
     }
 
-    .hero h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
-    }
-
-    .search-box {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .search-box input {
+    .hero input {
       padding: 12px;
-      width: 250px;
+      width: 300px;
       border-radius: 10px;
       border: none;
     }
 
-    /* CARDS */
-    .cards {
+    /* FEATURE CARDS */
+    .features {
       display: flex;
       justify-content: center;
       gap: 20px;
-      padding: 30px;
+      margin-top: -30px;
+      padding: 20px;
       flex-wrap: wrap;
     }
 
-    .card {
-      background: #f5f5f5;
-      width: 280px;
-      border-radius: 20px;
+    .feature-card {
+      background: white;
       padding: 20px;
+      width: 250px;
+      border-radius: 20px;
       text-align: center;
       box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-card img {
+      width: 100%;
+      border-radius: 15px;
+    }
+
+    /* RESTAURANTS */
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .card {
+      width: 260px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       transition: 0.3s;
     }
 
@@ -87,7 +121,20 @@
 
     .card img {
       width: 100%;
-      border-radius: 15px;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .rating {
+      background: green;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
     }
 
     .btn {
@@ -98,6 +145,7 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
+      width: 100%;
     }
 
   </style>
@@ -106,72 +154,90 @@
 <body>
 
 <!-- HEADER -->
-<header style="display:flex; align-items:center; justify-content:center; gap:10px;">
-  <img src="logo.png" width="70" style="vertical-align: middle;">
-    <span>Food Ordering App</span>
-</header>
-
-    <div id="loginBtn">
-  <button onclick="goLogin()">Sign In</button>
-</div>
+<div class="header">
+  <div class="logo-section">
+    <img src="logo.png" class="logo">
+    <h2>FoodApp</h2>
   </div>
 
-  <h1>Order food & groceries. Discover best restaurants.</h1>
+  <div class="nav">
 
-  <div class="search-box">
-    <input type="text" placeholder="Search food...">
+    <!-- LOCATION -->
+    <select id="location" onchange="saveLocation()">
+      <option>Select Location</option>
+      <option>Mumbai</option>
+      <option>Delhi</option>
+      <option>Pune</option>
+    </select>
+
+    <!-- DARK MODE -->
+    <button onclick="toggleDark()">🌙</button>
+
+    <!-- ORDERS -->
+    <button onclick="checkLoginForOrders()">Orders</button>
+
+    <!-- LOGIN -->
+    <button id="loginBtn" onclick="goLogin()">Sign In</button>
+
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Discover Best Food Near You 🍔</h1>
+  <input type="text" id="search" placeholder="Search food..." onkeyup="searchFood()">
+</div>
+
+<!-- FEATURE CARDS -->
+<div class="features">
+
+  <div class="feature-card">
+    <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092">
+    <h3>Food Delivery</h3>
+    <p>Fast & hot delivery</p>
+  </div>
+
+  <div class="feature-card">
+    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e">
+    <h3>Groceries</h3>
+    <p>Daily essentials</p>
+  </div>
+
+  <div class="feature-card">
+    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5">
+    <h3>Dineout</h3>
+    <p>Save more</p>
   </div>
 
 </div>
 
-<div id="userSection" style="display:none;">
+<!-- USER -->
+<div id="userSection" style="text-align:center; display:none;">
   <h3>Welcome, <span id="username"></span> 👋</h3>
   <button onclick="logout()">Logout</button>
 </div>
 
-<!-- CARDS -->
-<div class="cards">
+<!-- RESTAURANTS -->
+<div id="list" class="cards"></div>
 
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092">
-    <h3>Food Delivery</h3>
-    <p>Upto 60% OFF</p>
-    <button class="btn" onclick="goApp()">Explore</button>
-  </div>
-
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e">
-    <h3>Groceries</h3>
-    <p>Instant delivery</p>
-    <button class="btn">Coming Soon</button>
-  </div>
-
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5">
-    <h3>Dineout</h3>
-    <p>Save more</p>
-    <button class="btn">Coming Soon</button>
-  </div>
-
+<!-- CART -->
+<div id="cart" style="padding:20px;">
+  <h2>🛒 Cart</h2>
+  <div id="cartItems"></div>
+  <h3>Total: ₹<span id="total">0</span></h3>
+  <button onclick="payNow()">Pay Now</button>
 </div>
+
+<!-- ORDERS -->
+<div id="orders"></div>
 
 <script>
 function goLogin() {
   window.location.href = "login.html";
 }
-
-function goApp() {
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  if (!user) {
-    alert("Login first ❌");
-    window.location.href = "login.html";
-    return;
-  }
-
-  window.location.href = "home.html"; // food page
-}
 </script>
+
+<script src="script.js"></script>
 
 </body>
 </html>
