@@ -11,8 +11,8 @@ app.use(express.json());
 
 // ================= DB CONNECT =================
 mongoose.connect(process.env.MONGO_URL)
-.then(()=>console.log("MongoDB Connected ✅"))
-.catch(err=>console.log("❌ DB ERROR:", err.message));
+.then(()=>console.log("✅ Mongo Connected"))
+.catch(err=>console.log("❌ ERROR:", err));
 
 // 🔥 FORCE DATABASE
 const db = mongoose.connection.useDb("foodOrdering");
@@ -63,6 +63,7 @@ app.post('/api/orders', async (req, res) => {
 // ================= REGISTER =================
 app.post('/api/register', async (req, res) => {
     try {
+        console.log("🔥 ORDER HIT");
         const { name, email, password } = req.body;
 
         const existingUser = await db.collection("users").findOne({ email });
