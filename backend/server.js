@@ -10,11 +10,13 @@ app.use(cors());
 app.use(express.json());
 
 // ================= DB CONNECT =================
-mongoose.connect(process.env.MONGO_URL, {
-    dbName: "foodOrdering"
-})
+mongoose.connect(process.env.MONGO_URL)
 .then(()=>console.log("MongoDB Connected ✅"))
 .catch(err=>console.log("❌ DB ERROR:", err.message));
+
+// 🔥 FORCE DATABASE
+const db = mongoose.connection.useDb("foodOrdering");
+
 
 // ================= TEST =================
 app.get('/', (req,res)=>{
@@ -23,43 +25,37 @@ app.get('/', (req,res)=>{
 
 // ================= RESTAURANTS =================
 app.get('/api/restaurants', async (req,res)=>{
-    const data = await mongoose.connection.db.collection("restaurants").find().toArray();
+    const data = await db.collection("restaurants").find().toArray();
     res.json(data);
 });
 
-// 👉 ADMIN ADD RESTAURANT
+// ================= ADD RESTAURANT =================
 app.post('/api/restaurants', async (req,res)=>{
     try {
-        const { name, image, address, rating, menu } = req.body;
-
-        await mongoose.connection.db.collection("restaurants").insertOne({
-            name,
-            image,
-            address,
-            rating,
-            menu
-        });
-
+        await db.collection("restaurants").insertOne(req.body);
         res.json({ message: "Restaurant added ✅" });
-
-    } catch (err) {
-        res.json({ message: "Error adding restaurant ❌" });
+    } catch {
+        res.json({ message: "Error ❌" });
     }
 });
 
 // ================= ORDERS =================
 app.post('/api/orders', async (req, res) => {
     try {
-        const order = req.body;
+        console.log("📦 Incoming:", req.body);
 
+        const order = req.body;
         order.status = "pending";
         order.date = new Date();
 
-        await mongoose.connection.db.collection("orders").insertOne(order);
+        await db.collection("orders").insertOne(order);
+
+        console.log("✅ SAVED");
 
         res.json({ message: "Order placed successfully ✅" });
 
     } catch (err) {
+        console.log("❌ ERROR:", err);
         res.json({ message: "Order failed ❌" });
     }
 });
@@ -69,80 +65,44 @@ app.post('/api/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        if (!name || !email || !password) {
-            return res.json({ message: "All fields required ❌" });
-        }
-
-        const existingUser = await mongoose.connection.db
-            .collection("users")
-            .findOne({ email });
-
-        if (existingUser) {
-            return res.json({ message: "User already exists ❌" });
-        }
+        const existingUser = await db.collection("users").findOne({ email });
+        if (existingUser) return res.json({ message: "User exists ❌" });
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await mongoose.connection.db.collection("users").insertOne({
-            name,
-            email,
-            password: hashedPassword
+        await db.collection("users").insertOne({
+            name, email, password: hashedPassword
         });
 
-        res.json({ message: "User registered successfully ✅" });
+        res.json({ message: "Registered ✅" });
 
-    } catch (err) {
-        res.json({ message: "Register error ❌" });
+    } catch {
+        res.json({ message: "Error ❌" });
     }
 });
 
 // ================= LOGIN =================
 app.post('/api/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
+    const user = await db.collection("users").findOne({ email: req.body.email });
 
-        if (!email || !password) {
-            return res.json({ message: "All fields required ❌" });
-        }
+    if (!user) return res.json({ message: "User not found ❌" });
 
-        const user = await mongoose.connection.db
-            .collection("users")
-            .findOne({ email });
+    const match = await bcrypt.compare(req.body.password, user.password);
 
-        if (!user) {
-            return res.json({ message: "User not found ❌" });
-        }
+    if (!match) return res.json({ message: "Wrong password ❌" });
 
-        const isMatch = await bcrypt.compare(password, user.password);
+    const token = jwt.sign({ email: user.email }, "secret123");
 
-        if (!isMatch) {
-            return res.json({ message: "Wrong password ❌" });
-        }
-
-        const token = jwt.sign({ email: user.email }, "secret123");
-
-        res.json({ message: "Login successful ✅", token });
-
-    } catch (err) {
-        res.json({ message: "Login error ❌" });
-    }
+    res.json({ message: "Login successful ✅", token });
 });
 
 // ================= GET ORDERS =================
 app.get('/api/orders/:email', async (req, res) => {
-    try {
-        const email = req.params.email;
+    const data = await db.collection("orders")
+        .find({ userEmail: req.params.email })
+        .toArray();
 
-        const orders = await mongoose.connection.db
-            .collection("orders")
-            .find({ userEmail: email })
-            .toArray();
-
-        res.json(orders);
-
-    } catch (err) {
-        res.json([]);
-    }
+    res.json(data);
 });
 
 // ================= SERVER =================
