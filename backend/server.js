@@ -10,7 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 // ================= DB CONNECT =================
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(process.env.MONGO_URL,{
+    dbName: "foodOrdering"
+})
 .then(()=>console.log("✅ Mongo Connected"))
 .catch(err=>console.log("❌ ERROR:", err));
 
