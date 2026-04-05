@@ -229,3 +229,13 @@ window.onload = function () {
     loadRestaurants();
     renderCart();
 };
+window.checkLoginForOrders = function () {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("Login first ❌");
+        return;
+    }
+
+    loadOrders();
+};
