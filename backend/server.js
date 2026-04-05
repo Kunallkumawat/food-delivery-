@@ -46,7 +46,7 @@ app.post('/api/orders', async (req, res) => {
 
         const order = req.body;
         order.status = "pending";
-        new Date(order.date).toLocaleString("en-IN");
+        order.date = new Date();
 
         await db.collection("orders").insertOne(order);
 
