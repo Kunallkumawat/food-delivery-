@@ -81,3 +81,16 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, ()=>{
     console.log(`Server running on ${PORT} 🚀`);
 });
+// ================= GET ORDERS =================
+app.get('/api/orders/:email', async (req, res) => {
+    try {
+        const data = await db.collection("orders")
+            .find({ userEmail: req.params.email })
+            .toArray();
+
+        res.json(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Error fetching orders ❌" });
+    }
+});
