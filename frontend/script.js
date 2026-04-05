@@ -7,15 +7,16 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 function loadRestaurants() {
     const user = JSON.parse(localStorage.getItem("user"));
 
+    const list = document.getElementById("list");
+
     if (!user) {
-        document.getElementById("list").innerHTML = "<h2>Login to view restaurants 🔒</h2>";
+        list.innerHTML = "<h2>Login to view restaurants 🔒</h2>";
         return;
     }
 
     fetch(`${API}/api/restaurants`)
     .then(res => res.json())
     .then(data => {
-        const list = document.getElementById("list");
         list.innerHTML = "";
 
         data.forEach(r => {
@@ -26,7 +27,7 @@ function loadRestaurants() {
 
             r.menu.forEach(item => {
                 menuHTML += `
-                    <div>
+                    <div style="margin:5px 0;">
                         ${item.name} - ₹${item.price}
                         <button onclick="addToCart('${item.name}', ${item.price})">Add</button>
                     </div>
@@ -34,7 +35,7 @@ function loadRestaurants() {
             });
 
             div.innerHTML = `
-                <img src="${r.image}" />
+                <img src="${r.image}" style="width:100%; height:150px; object-fit:cover;">
                 <h3>${r.name}</h3>
                 <p>${r.address}</p>
                 <p>⭐ ${r.rating}</p>
@@ -88,6 +89,16 @@ function renderCart() {
 function payNow() {
     const user = JSON.parse(localStorage.getItem("user"));
 
+    if (!user) {
+        alert("Login first ❌");
+        return;
+    }
+
+    if (cart.length === 0) {
+        alert("Cart empty ❌");
+        return;
+    }
+
     fetch(`${API}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -130,15 +141,32 @@ function login() {
 function showUser() {
     const user = JSON.parse(localStorage.getItem("user"));
 
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const name = document.getElementById("userName");
+
     if (user) {
-        document.getElementById("userName").innerText = user.email;
-        document.getElementById("loginBtn").style.display = "none";
+        if (name) name.innerText = "👤 " + user.email;
+        if (loginBtn) loginBtn.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "inline-block";
+    } else {
+        if (name) name.innerText = "";
+        if (loginBtn) loginBtn.style.display = "inline-block";
+        if (logoutBtn) logoutBtn.style.display = "none";
     }
+}
+
+// ================= LOGOUT =================
+function logout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("cart");
+
+    location.reload();
 }
 
 // ================= LOAD =================
 window.onload = function () {
+    showUser();
     loadRestaurants();
     renderCart();
-    showUser();
 };
