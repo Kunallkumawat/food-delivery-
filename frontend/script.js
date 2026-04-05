@@ -6,7 +6,6 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 // ================= RESTAURANTS =================
 function loadRestaurants() {
     const user = JSON.parse(localStorage.getItem("user"));
-
     const list = document.getElementById("list");
 
     if (!user) {
@@ -116,6 +115,67 @@ function payNow() {
     });
 }
 
+// ================= GET ORDERS =================
+function loadOrders() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("Login first ❌");
+        return;
+    }
+
+    fetch(`${API}/api/orders/${user.email}`)
+    .then(res => res.json())
+    .then(data => {
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.forEach(order => {
+
+            // 🔥 DATE IN INDIAN FORMAT
+            const date = new Date(order.date).toLocaleString("en-IN", {
+                timeZone: "Asia/Kolkata",
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+            let itemsHTML = "";
+
+            order.items.forEach(i => {
+                itemsHTML += `<p>${i.name} x${i.quantity}</p>`;
+            });
+
+            const div = document.createElement("div");
+            div.classList.add("card");
+
+            div.innerHTML = `
+                <h3>🧾 Order</h3>
+                ${itemsHTML}
+                <p><b>Total:</b> ₹${order.total}</p>
+                <p><b>Status:</b> ${order.status}</p>
+                <p><b>Date:</b> ${date}</p>
+            `;
+
+            list.appendChild(div);
+        });
+    });
+}
+
+// ================= ORDERS BUTTON =================
+function checkLoginForOrders() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("Login first ❌");
+        return;
+    }
+
+    loadOrders();
+}
+
 // ================= LOGIN =================
 function login() {
     const email = document.getElementById("email").value;
@@ -160,7 +220,6 @@ function showUser() {
 function logout() {
     localStorage.removeItem("user");
     localStorage.removeItem("cart");
-
     location.reload();
 }
 
