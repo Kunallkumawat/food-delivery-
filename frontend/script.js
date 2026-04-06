@@ -245,8 +245,15 @@ function sendFeedback() {
     const email = document.getElementById("f_email").value;
     const message = document.getElementById("f_msg").value;
 
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!name || !email || !message) {
         alert("All fields required ❌");
+        return;
+    }
+    
+    if (!emailPattern.test(email)) {
+        alert("Enter valid email ❌");
         return;
     }
 
