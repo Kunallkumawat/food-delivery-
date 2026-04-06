@@ -239,3 +239,48 @@ window.checkLoginForOrders = function () {
 
     loadOrders();
 };
+
+function sendFeedback() {
+    const name = document.getElementById("f_name").value;
+    const email = document.getElementById("f_email").value;
+    const message = document.getElementById("f_msg").value;
+
+    if (!name || !email || !message) {
+        alert("All fields required ❌");
+        return;
+    }
+
+    fetch(`${API}/api/feedback`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("Feedback submitted ✅");
+
+        // clear form
+        document.getElementById("f_name").value = "";
+        document.getElementById("f_email").value = "";
+        document.getElementById("f_msg").value = "";
+
+        // 🔥 BACK TO HOME
+        goHome();
+    });
+}
+// ================= NAVIGATION =================
+function goHome() {
+    document.getElementById("list").style.display = "flex";
+    document.getElementById("featureSection").style.display = "none";
+    document.getElementById("feedbackBox").style.display = "none";
+
+    loadRestaurants();
+}
+
+function showFeedback() {
+    document.getElementById("list").style.display = "none";
+    document.getElementById("featureSection").style.display = "none";
+    document.getElementById("feedbackBox").style.display = "block";
+}

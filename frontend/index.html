@@ -156,7 +156,7 @@
     </select>
     <button onclick="loadRestaurants()">Home</button>
     <button onclick="checkLoginForOrders()">Orders</button>
-
+    <button onclick="showFeedback()">Feedback</button>
     <span id="userName"></span>
 
     <button id="loginBtn" onclick="goLogin()">Sign In</button>
@@ -170,6 +170,7 @@
   <input type="text" placeholder="Search food...">
 </div>
 
+
 <!-- FEATURE -->
 <div class="features" id="featureSection">
   <div class="feature-card">
@@ -179,6 +180,17 @@
 
 <!-- RESTAURANTS -->
 <div id="list" class="cards"></div>
+
+<!-- FEEDBACK FORM -->
+<div id="feedbackBox" style="display:none; text-align:center; padding:30px;">
+  <h2>📩 Feedback</h2>
+
+  <input type="text" id="f_name" placeholder="Your Name"><br><br>
+  <input type="email" id="f_email" placeholder="Your Email"><br><br>
+  <textarea id="f_msg" placeholder="Your Message"></textarea><br><br>
+
+  <button onclick="sendFeedback()">Submit</button>
+</div>
 
 <!-- CART -->
 <div id="cart">

@@ -94,3 +94,26 @@ app.get('/api/orders/:email', async (req, res) => {
         res.status(500).json({ message: "Error fetching orders ❌" });
     }
 });
+
+// ================= FEEDBACK =================
+app.post('/api/feedback', async (req, res) => {
+    try {
+        const { name, email, message } = req.body;
+
+        if (!name || !email || !message) {
+            return res.json({ message: "All fields required ❌" });
+        }
+
+        await db.collection("feedback").insertOne({
+            name,
+            email,
+            message,
+            date: new Date()
+        });
+
+        res.json({ message: "Feedback saved ✅" });
+
+    } catch (err) {
+        res.json({ message: "Error ❌" });
+    }
+});
